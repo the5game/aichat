@@ -8,11 +8,18 @@
 </head>
 <body>
     <div id="header">
-        <button id="new-chat-button" class="header-button">Nouveau Chat</button>
-        <div class="header-right">
-            <a href="login.html" class="header-button">Connexion</a>
-            <a href="signup.html" class="header-button">Inscription</a>
-        </div>
+    <button id="new-chat-button" class="header-button">Nouveau Chat</button>
+    <div id="user-info">
+        <span id="username-display" style="display: none;">Bienvenue, <span id="username-value"></span></span>
+    </div>
+    <div class="header-right" id="auth-buttons">
+        <a href="login.html" class="header-button">Connexion</a>
+        <a href="signup.html" class="header-button">Inscription</a>
+    </div>
+    <div class="header-right" id="logout-button" style="display: none;">
+        <button id="logout" class="header-button">Déconnexion</button>
+    </div>
+</div>
     </div>
     <div id="chat-container">
         <div id="chat-box"></div>
