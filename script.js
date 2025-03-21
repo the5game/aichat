@@ -84,4 +84,30 @@ document.getElementById('send-button').addEventListener('click', async function(
 });
 
 // Charger l'historique des conversations au chargement de la page
-window.onload = loadChatHistory;
+window.onload = loadChatHistory;async function getAIResponse(userInput) {
+    try {
+        console.log('Envoi de la requête à l\'API...');
+        const response = await fetch('https://api.openai.com/v1/engines/davinci-codex/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${API_KEY}`
+            },
+            body: JSON.stringify({
+                prompt: userInput,
+                max_tokens: 150
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`Erreur HTTP: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('Réponse reçue:', data);
+        return data.choices[0].text.trim();
+    } catch (error) {
+        console.error('Erreur lors de la récupération de la réponse de l\'AI:', error);
+        return "Désolé, une erreur s'est produite.";
+    }
+}
