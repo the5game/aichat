@@ -327,3 +327,63 @@ body {
 #login-form button:hover, #signup-form button:hover {
     background-color: #005bb5;
 }
+/* Add these new styles to your existing style.css */
+
+/* Animation for loading dots */
+@keyframes blink {
+    0% { opacity: 0.2; }
+    20% { opacity: 1; }
+    100% { opacity: 0.2; }
+}
+
+.loading-dots {
+    animation: blink 1.4s infinite both;
+}
+
+/* Better spacing for messages */
+.message {
+    padding: 10px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+    max-width: 80%;
+    word-break: break-word;
+    line-height: 1.4;
+}
+
+.user-message {
+    background-color: #0a74da;
+    color: white;
+    align-self: flex-end;
+    margin-left: auto;
+    margin-right: 5px;
+}
+
+.ai-message {
+    background-color: #333;
+    color: white;
+    align-self: flex-start;
+    margin-right: auto;
+    margin-left: 5px;
+}
+
+/* Make sure the chat container uses flex layout for better message positioning */
+#chat-box {
+    height: 400px;
+    overflow-y: scroll;
+    border: 1px solid #333;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #1e1e1e;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Loading message styling */
+.loading-message {
+    background-color: #444;
+}
+
+/* Cursor effect for the currently typing message */
+.ai-message:last-child {
+    border-right: 2px solid #ffffff;
+}
