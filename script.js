@@ -1,4 +1,4 @@
-// script.js - Modified to include typing animation
+// script.js - Modified to include typing animation and new chat functionality
 // Function to get a cookie by name
 function getCookie(name) {
     let value = "; " + document.cookie;
@@ -30,6 +30,22 @@ function loadChatHistory() {
 function saveChatHistory() {
     const chatBox = document.getElementById('chat-box');
     setCookie('chatHistory', chatBox.innerHTML, 7); // Save for 7 days
+}
+
+// Function to clear chat history
+function clearChatHistory() {
+    const chatBox = document.getElementById('chat-box');
+    chatBox.innerHTML = '';
+    setCookie('chatHistory', '', -1); // Remove the cookie
+    
+    // Add a welcome message to the new chat
+    const welcomeMessage = document.createElement('div');
+    welcomeMessage.textContent = "AI: Bonjour ! Comment puis-je vous aider aujourd'hui ?";
+    welcomeMessage.classList.add('message', 'ai-message');
+    chatBox.appendChild(welcomeMessage);
+    
+    // Save this initial state
+    saveChatHistory();
 }
 
 // Load QA pairs data
@@ -147,10 +163,27 @@ document.getElementById('user-input').addEventListener('keypress', function(e) {
     }
 });
 
+// Event for the new chat button
+document.getElementById('new-chat-button').addEventListener('click', function() {
+    // Ask for confirmation before clearing chat history
+    if (confirm("Voulez-vous vraiment commencer un nouveau chat ? Toute la conversation actuelle sera effacée.")) {
+        clearChatHistory();
+    }
+});
+
 // Initialize when the page loads
 window.onload = function() {
     // First, load chat history
     loadChatHistory();
+    
+    // If no chat history exists, show a welcome message
+    if (document.getElementById('chat-box').innerHTML.trim() === '') {
+        const welcomeMessage = document.createElement('div');
+        welcomeMessage.textContent = "AI: Bonjour ! Comment puis-je vous aider aujourd'hui ?";
+        welcomeMessage.classList.add('message', 'ai-message');
+        document.getElementById('chat-box').appendChild(welcomeMessage);
+        saveChatHistory();
+    }
     
     // Then, load QA pairs 
     // This assumes the QA pairs have been loaded via qa_pairs.js
