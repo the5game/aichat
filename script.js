@@ -41,7 +41,7 @@ async function getAIResponse(userInput) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${API_KEY}`
+                'Authorization': `Bearer ${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}`
             },
             body: JSON.stringify({
                 prompt: userInput,
@@ -91,7 +91,7 @@ window.onload = loadChatHistory;async function getAIResponse(userInput) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${API_KEY}`
+                'Authorization': `Bearer ${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}`
             },
             body: JSON.stringify({
                 prompt: userInput,
