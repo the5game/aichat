@@ -1,4 +1,4 @@
-// script.js - Modified to use local QA pairs instead of external AI
+// script.js - Modified to include typing animation
 // Function to get a cookie by name
 function getCookie(name) {
     let value = "; " + document.cookie;
@@ -63,29 +63,80 @@ function getAIResponse(userInput) {
     return "Désolé, je ne comprends pas votre question. Pouvez-vous reformuler?";
 }
 
+// Function to simulate typing effect
+function typeWriter(element, text, speed) {
+    let i = 0;
+    element.textContent = "AI: "; // Start with just the prefix
+    
+    function type() {
+        if (i < text.length) {
+            element.textContent += text.charAt(i);
+            i++;
+            setTimeout(type, speed);
+        } else {
+            // Animation complete, save chat history
+            saveChatHistory();
+        }
+    }
+    
+    type(); // Start the typing animation
+}
+
+// Add a loading indicator
+function addLoadingIndicator(chatBox) {
+    const loadingDiv = document.createElement('div');
+    loadingDiv.classList.add('message', 'ai-message', 'loading-message');
+    loadingDiv.textContent = "AI: ";
+    
+    const loadingDots = document.createElement('span');
+    loadingDots.classList.add('loading-dots');
+    loadingDots.textContent = "...";
+    loadingDiv.appendChild(loadingDots);
+    
+    chatBox.appendChild(loadingDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
+    
+    return loadingDiv;
+}
+
 // Event for the send button
 document.getElementById('send-button').addEventListener('click', function() {
     const userInput = document.getElementById('user-input').value;
     const chatBox = document.getElementById('chat-box');
 
     if (userInput.trim() !== "") {
+        // Display user message
         const userMessage = document.createElement('div');
         userMessage.textContent = "Vous: " + userInput;
         userMessage.classList.add('message', 'user-message');
         chatBox.appendChild(userMessage);
-
-        // Get AI response (synchronous now since we're using local data)
-        const aiResponse = getAIResponse(userInput);
-        const aiMessage = document.createElement('div');
-        aiMessage.textContent = "AI: " + aiResponse;
-        aiMessage.classList.add('message', 'ai-message');
-        chatBox.appendChild(aiMessage);
-
+        
+        // Clear input field
         document.getElementById('user-input').value = "";
-        chatBox.scrollTop = chatBox.scrollHeight;
-
-        // Save chat history
-        saveChatHistory();
+        
+        // Show loading indicator
+        const loadingIndicator = addLoadingIndicator(chatBox);
+        
+        // Get AI response
+        const aiResponse = getAIResponse(userInput);
+        
+        // Simulate response delay (between 500ms and 1500ms)
+        const delay = 500 + Math.random() * 1000;
+        
+        setTimeout(() => {
+            // Remove the loading indicator
+            chatBox.removeChild(loadingIndicator);
+            
+            // Create AI message element
+            const aiMessage = document.createElement('div');
+            aiMessage.classList.add('message', 'ai-message');
+            chatBox.appendChild(aiMessage);
+            
+            // Begin typing effect
+            typeWriter(aiMessage, aiResponse, 30); // 30ms per character
+            
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }, delay);
     }
 });
 
