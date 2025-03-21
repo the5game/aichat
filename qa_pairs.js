@@ -1,4 +1,5 @@
-[
+// qa_pairs.js - Exposing the data globally for script.js
+window.qaPairsData = [
     {
         "question": "Quel temps fait-il aujourd'hui ?",
         "answer": "Aujourd'hui, il fait beau avec un ciel dégagé et une température agréable de 22°C."
@@ -55,4 +56,30 @@
         "question": "Comment prendre soin d'un chat ?",
         "answer": "Pour prendre soin d'un chat, assurez-vous de lui fournir de la nourriture de qualité, de l'eau fraîche, une litière propre, des jouets pour le stimuler, et des visites régulières chez le vétérinaire."
     }
-]
+];
+
+// Add some generic responses for common questions
+window.qaPairsData.push(
+    {
+        "question": "bonjour",
+        "answer": "Bonjour ! Comment puis-je vous aider aujourd'hui ?"
+    },
+    {
+        "question": "salut",
+        "answer": "Salut ! Comment puis-je vous aider ?"
+    },
+    {
+        "question": "comment ça va",
+        "answer": "Je vais bien, merci ! Comment puis-je vous aider aujourd'hui ?"
+    },
+    {
+        "question": "merci",
+        "answer": "De rien ! N'hésitez pas si vous avez d'autres questions."
+    },
+    {
+        "question": "au revoir",
+        "answer": "Au revoir ! Passez une excellente journée !"
+    }
+);
+
+console.log('QA Pairs loaded:', window.qaPairsData.length, 'pairs');
