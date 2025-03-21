@@ -1,3 +1,6 @@
+// Vérifiez si le fichier config.js est correctement importé
+import { API_KEY } from './config.js';
+
 // Fonction pour obtenir un cookie par nom
 function getCookie(name) {
     let value = "; " + document.cookie;
@@ -25,32 +28,36 @@ function loadChatHistory() {
     }
 }
 
-// pour sauvegarder l'historique des conversations
+// Fonction pour sauvegarder l'historique des conversations
 function saveChatHistory() {
     const chatBox = document.getElementById('chat-box');
     setCookie('chatHistory', chatBox.innerHTML, 7); // Sauvegarde pour 7 jours
 }
 
-// Importer la clé API
-import { API_KEY } from './config.js';
-
+// Fonction pour obtenir la réponse de l'AI
 async function getAIResponse(userInput) {
-    const response = await fetch('https://api.openai.com/v1/engines/davinci-codex/completions', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${API_KEY}`
-        },
-        body: JSON.stringify({
-            prompt: userInput,
-            max_tokens: 150
-        })
-    });
+    try {
+        const response = await fetch('https://api.openai.com/v1/engines/davinci-codex/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${API_KEY}`
+            },
+            body: JSON.stringify({
+                prompt: userInput,
+                max_tokens: 150
+            })
+        });
 
-    const data = await response.json();
-    return data.choices[0].text.trim();
+        const data = await response.json();
+        return data.choices[0].text.trim();
+    } catch (error) {
+        console.error('Erreur lors de la récupération de la réponse de l\'AI:', error);
+        return "Désolé, une erreur s'est produite.";
+    }
 }
 
+// Événement du bouton d'envoi
 document.getElementById('send-button').addEventListener('click', async function() {
     const userInput = document.getElementById('user-input').value;
     const chatBox = document.getElementById('chat-box');
