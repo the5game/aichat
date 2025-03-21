@@ -230,3 +230,39 @@ body {
 #login-form button:hover, #signup-form button:hover {
     background-color: #005bb5;
 }
+#signup-container {
+    width: 300px;
+    background-color: #1e1e1e;
+    border: 1px solid #333;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+#signup-form {
+    display: flex;
+    flex-direction: column;
+}
+
+#signup-form label {
+    margin-bottom: 5px;
+}
+
+#signup-form input {
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #333;
+    color: white;
+    border: 1px solid #333;
+}
+
+#signup-form button {
+    padding: 10px;
+    background-color: #0a74da;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+#signup-form button:hover {
+    background-color: #005bb5;
+}
