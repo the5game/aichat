@@ -111,3 +111,38 @@ window.onload = loadChatHistory;async function getAIResponse(userInput) {
         return "Désolé, une erreur s'est produite.";
     }
 }
+
+// Fonction pour charger les questions-réponses à partir d'un fichier JSON
+async function loadQAPairs() {
+    try {
+        const response = await fetch('qa_pairs.json');
+        const qaPairs = await response.json();
+        return qaPairs;
+    } catch (error) {
+        console.error('Erreur lors du chargement des questions-réponses:', error);
+        return [];
+    }
+}
+
+// Fonction pour afficher une question-réponse dans le chat
+function displayQAPair(qaPair) {
+    const chatBox = document.getElementById('chat-box');
+    const userMessage = document.createElement('div');
+    userMessage.textContent = "Vous: " + qaPair.question;
+    userMessage.classList.add('message', 'user-message');
+    chatBox.appendChild(userMessage);
+
+    const aiMessage = document.createElement('div');
+    aiMessage.textContent = "AI: " + qaPair.answer;
+    aiMessage.classList.add('message', 'ai-message');
+    chatBox.appendChild(aiMessage);
+
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+// Charger et afficher les questions-réponses au chargement de la page
+window.onload = async function() {
+    loadChatHistory();
+    const qaPairs = await loadQAPairs();
+    qaPairs.forEach(displayQAPair);
+};
