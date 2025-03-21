@@ -475,3 +475,38 @@ body {
 .ai-message:last-child {
     border-right: 2px solid #ffffff;
 }
+
+/* Style pour l'affichage du nom d'utilisateur */
+#user-info {
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+#username-display {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 5px 10px;
+    border-radius: 15px;
+    margin-right: 10px;
+}
+
+#username-value {
+    color: #4CAF50;
+    font-weight: bold;
+}
+
+/* Style pour les messages d'utilisateur connecté */
+.user-message.logged-in {
+    background-color: #4CAF50;  /* Couleur différente pour les utilisateurs connectés */
+}
+
+/* Style pour le bouton de déconnexion */
+#logout {
+    background-color: #ff5252;
+}
+
+#logout:hover {
+    background-color: #ff0000;
+}
