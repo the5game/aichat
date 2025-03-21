@@ -16,7 +16,10 @@
         <input type="text" id="user-input" placeholder="Tapez votre message...">
         <button id="send-button">Envoyer</button>
     </div>
-    <script src="config.js"></script>
+    
+    <!-- Load QA Pairs data first, before the main script -->
+    <script src="qa_pairs.js"></script>
+    <!-- Then load the main script -->
     <script src="script.js"></script>
 </body>
 </html>
