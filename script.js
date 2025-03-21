@@ -1,14 +1,12 @@
-// Vérifiez si le fichier config.js est correctement importé
-import { API_KEY } from './config.js';
-
-// Fonction pour obtenir un cookie par nom
+// script.js - Modified to use local QA pairs instead of external AI
+// Function to get a cookie by name
 function getCookie(name) {
     let value = "; " + document.cookie;
     let parts = value.split("; " + name + "=");
     if (parts.length === 2) return parts.pop().split(";").shift();
 }
 
-// Fonction pour définir un cookie
+// Function to set a cookie
 function setCookie(name, value, days) {
     let expires = "";
     if (days) {
@@ -19,7 +17,7 @@ function setCookie(name, value, days) {
     document.cookie = name + "=" + (value || "") + expires + "; path=/";
 }
 
-// Fonction pour charger l'historique des conversations
+// Function to load chat history
 function loadChatHistory() {
     const chatBox = document.getElementById('chat-box');
     const chatHistory = getCookie('chatHistory');
@@ -28,37 +26,45 @@ function loadChatHistory() {
     }
 }
 
-// Fonction pour sauvegarder l'historique des conversations
+// Function to save chat history
 function saveChatHistory() {
     const chatBox = document.getElementById('chat-box');
-    setCookie('chatHistory', chatBox.innerHTML, 7); // Sauvegarde pour 7 jours
+    setCookie('chatHistory', chatBox.innerHTML, 7); // Save for 7 days
 }
 
-// Fonction pour obtenir la réponse de l'AI
-async function getAIResponse(userInput) {
-    try {
-        const response = await fetch('https://api.openai.com/v1/engines/davinci-codex/completions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${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}`
-            },
-            body: JSON.stringify({
-                prompt: userInput,
-                max_tokens: 150
-            })
-        });
+// Load QA pairs data
+let qaPairsData = [];
+// This will be populated when qa_pairs.js is loaded
 
-        const data = await response.json();
-        return data.choices[0].text.trim();
-    } catch (error) {
-        console.error('Erreur lors de la récupération de la réponse de l\'AI:', error);
-        return "Désolé, une erreur s'est produite.";
+// Function to get AI response from local data
+function getAIResponse(userInput) {
+    // Convert input to lowercase for better matching
+    const userQuestion = userInput.toLowerCase().trim();
+    
+    // Try to find an exact match in our QA pairs
+    for (const pair of qaPairsData) {
+        if (pair.question.toLowerCase().trim() === userQuestion) {
+            return pair.answer;
+        }
     }
+    
+    // If no exact match, look for keywords
+    for (const pair of qaPairsData) {
+        const keywords = pair.question.toLowerCase().split(' ');
+        // Count how many keywords match
+        const matchCount = keywords.filter(word => userQuestion.includes(word)).length;
+        // If more than 50% of keywords match, return this answer
+        if (matchCount >= keywords.length * 0.5) {
+            return pair.answer;
+        }
+    }
+    
+    // Default response if no match found
+    return "Désolé, je ne comprends pas votre question. Pouvez-vous reformuler?";
 }
 
-// Événement du bouton d'envoi
-document.getElementById('send-button').addEventListener('click', async function() {
+// Event for the send button
+document.getElementById('send-button').addEventListener('click', function() {
     const userInput = document.getElementById('user-input').value;
     const chatBox = document.getElementById('chat-box');
 
@@ -68,8 +74,8 @@ document.getElementById('send-button').addEventListener('click', async function(
         userMessage.classList.add('message', 'user-message');
         chatBox.appendChild(userMessage);
 
-        // Obtenir la réponse de l'AI
-        const aiResponse = await getAIResponse(userInput);
+        // Get AI response (synchronous now since we're using local data)
+        const aiResponse = getAIResponse(userInput);
         const aiMessage = document.createElement('div');
         aiMessage.textContent = "AI: " + aiResponse;
         aiMessage.classList.add('message', 'ai-message');
@@ -78,71 +84,30 @@ document.getElementById('send-button').addEventListener('click', async function(
         document.getElementById('user-input').value = "";
         chatBox.scrollTop = chatBox.scrollHeight;
 
-        // Sauvegarder l'historique des conversations
+        // Save chat history
         saveChatHistory();
     }
 });
 
-// Charger l'historique des conversations au chargement de la page
-window.onload = loadChatHistory;async function getAIResponse(userInput) {
-    try {
-        console.log('Envoi de la requête à l\'API...');
-        const response = await fetch('https://api.openai.com/v1/engines/davinci-codex/completions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${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}`
-            },
-            body: JSON.stringify({
-                prompt: userInput,
-                max_tokens: 150
-            })
-        });
-
-        if (!response.ok) {
-            throw new Error(`Erreur HTTP: ${response.status}`);
-        }
-
-        const data = await response.json();
-        console.log('Réponse reçue:', data);
-        return data.choices[0].text.trim();
-    } catch (error) {
-        console.error('Erreur lors de la récupération de la réponse de l\'AI:', error);
-        return "Désolé, une erreur s'est produite.";
+// Handle the Enter key press in the input field
+document.getElementById('user-input').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        document.getElementById('send-button').click();
     }
-}
+});
 
-// Fonction pour charger les questions-réponses à partir d'un fichier JSON
-async function loadQAPairs() {
-    try {
-        const response = await fetch('qa_pairs.json');
-        const qaPairs = await response.json();
-        return qaPairs;
-    } catch (error) {
-        console.error('Erreur lors du chargement des questions-réponses:', error);
-        return [];
-    }
-}
-
-// Fonction pour afficher une question-réponse dans le chat
-function displayQAPair(qaPair) {
-    const chatBox = document.getElementById('chat-box');
-    const userMessage = document.createElement('div');
-    userMessage.textContent = "Vous: " + qaPair.question;
-    userMessage.classList.add('message', 'user-message');
-    chatBox.appendChild(userMessage);
-
-    const aiMessage = document.createElement('div');
-    aiMessage.textContent = "AI: " + qaPair.answer;
-    aiMessage.classList.add('message', 'ai-message');
-    chatBox.appendChild(aiMessage);
-
-    chatBox.scrollTop = chatBox.scrollHeight;
-}
-
-// Charger et afficher les questions-réponses au chargement de la page
-window.onload = async function() {
+// Initialize when the page loads
+window.onload = function() {
+    // First, load chat history
     loadChatHistory();
-    const qaPairs = await loadQAPairs();
-    qaPairs.forEach(displayQAPair);
+    
+    // Then, load QA pairs 
+    // This assumes the QA pairs have been loaded via qa_pairs.js
+    // And made available as a global variable
+    if (typeof window.qaPairsData !== 'undefined') {
+        qaPairsData = window.qaPairsData;
+        console.log('QA pairs loaded successfully:', qaPairsData.length, 'pairs');
+    } else {
+        console.error('QA pairs not found! Make sure qa_pairs.js is loaded before script.js');
+    }
 };
