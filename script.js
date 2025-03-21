@@ -1,4 +1,4 @@
-// script.js - Modified to include typing animation and new chat functionality
+// script.js - Modified to include typing animation, new chat functionality, and user display
 // Function to get a cookie by name
 function getCookie(name) {
     let value = "; " + document.cookie;
@@ -38,14 +38,58 @@ function clearChatHistory() {
     chatBox.innerHTML = '';
     setCookie('chatHistory', '', -1); // Remove the cookie
     
+    // Check if user is logged in for personalized greeting
+    const username = getCookie('activeUser');
+    const isLoggedIn = getCookie('loggedIn') === 'true';
+    
     // Add a welcome message to the new chat
     const welcomeMessage = document.createElement('div');
-    welcomeMessage.textContent = "AI: Bonjour ! Comment puis-je vous aider aujourd'hui ?";
+    if (isLoggedIn && username) {
+        welcomeMessage.textContent = `AI: Bonjour ${username} ! Comment puis-je vous aider aujourd'hui ?`;
+    } else {
+        welcomeMessage.textContent = "AI: Bonjour ! Comment puis-je vous aider aujourd'hui ?";
+    }
     welcomeMessage.classList.add('message', 'ai-message');
     chatBox.appendChild(welcomeMessage);
     
     // Save this initial state
     saveChatHistory();
+}
+
+// Function to check login status and update UI
+function checkLoginStatus() {
+    const isLoggedIn = getCookie('loggedIn') === 'true';
+    const username = getCookie('activeUser');
+    
+    const usernameDisplay = document.getElementById('username-display');
+    const usernameValue = document.getElementById('username-value');
+    const authButtons = document.getElementById('auth-buttons');
+    const logoutButton = document.getElementById('logout-button');
+    
+    if (isLoggedIn && username) {
+        // Update the username display
+        usernameDisplay.style.display = 'inline-block';
+        usernameValue.textContent = username;
+        
+        // Show logout button and hide auth buttons
+        authButtons.style.display = 'none';
+        logoutButton.style.display = 'flex';
+    } else {
+        // Hide username display and logout, show auth buttons
+        usernameDisplay.style.display = 'none';
+        authButtons.style.display = 'flex';
+        logoutButton.style.display = 'none';
+    }
+}
+
+// Function to handle logout
+function logout() {
+    // Clear login cookies
+    setCookie('loggedIn', '', -1);
+    setCookie('activeUser', '', -1);
+    
+    // Refresh the page
+    window.location.reload();
 }
 
 // Load QA pairs data
@@ -76,7 +120,14 @@ function getAIResponse(userInput) {
     }
     
     // Default response if no match found
-    return "Désolé, je ne comprends pas votre question. Pouvez-vous reformuler?";
+    const username = getCookie('activeUser');
+    const isLoggedIn = getCookie('loggedIn') === 'true';
+    
+    if (isLoggedIn && username) {
+        return `Désolé ${username}, je ne comprends pas votre question. Pouvez-vous reformuler?`;
+    } else {
+        return "Désolé, je ne comprends pas votre question. Pouvez-vous reformuler?";
+    }
 }
 
 // Function to simulate typing effect
@@ -119,11 +170,19 @@ function addLoadingIndicator(chatBox) {
 document.getElementById('send-button').addEventListener('click', function() {
     const userInput = document.getElementById('user-input').value;
     const chatBox = document.getElementById('chat-box');
+    
+    // Get username if logged in
+    const username = getCookie('activeUser');
+    const isLoggedIn = getCookie('loggedIn') === 'true';
 
     if (userInput.trim() !== "") {
-        // Display user message
+        // Display user message with username if logged in
         const userMessage = document.createElement('div');
-        userMessage.textContent = "Vous: " + userInput;
+        if (isLoggedIn && username) {
+            userMessage.textContent = `${username}: ${userInput}`;
+        } else {
+            userMessage.textContent = "Vous: " + userInput;
+        }
         userMessage.classList.add('message', 'user-message');
         chatBox.appendChild(userMessage);
         
@@ -171,18 +230,45 @@ document.getElementById('new-chat-button').addEventListener('click', function() 
     }
 });
 
+// Event for the logout button
+document.addEventListener('DOMContentLoaded', function() {
+    if (document.getElementById('logout')) {
+        document.getElementById('logout').addEventListener('click', function() {
+            logout();
+        });
+    }
+});
+
 // Initialize when the page loads
 window.onload = function() {
-    // First, load chat history
+    // First, check login status and update UI
+    checkLoginStatus();
+    
+    // Then, load chat history
     loadChatHistory();
     
     // If no chat history exists, show a welcome message
     if (document.getElementById('chat-box').innerHTML.trim() === '') {
         const welcomeMessage = document.createElement('div');
-        welcomeMessage.textContent = "AI: Bonjour ! Comment puis-je vous aider aujourd'hui ?";
+        
+        // Personalize welcome message if logged in
+        const username = getCookie('activeUser');
+        const isLoggedIn = getCookie('loggedIn') === 'true';
+        
+        if (isLoggedIn && username) {
+            welcomeMessage.textContent = `AI: Bonjour ${username} ! Comment puis-je vous aider aujourd'hui ?`;
+        } else {
+            welcomeMessage.textContent = "AI: Bonjour ! Comment puis-je vous aider aujourd'hui ?";
+        }
+        
         welcomeMessage.classList.add('message', 'ai-message');
         document.getElementById('chat-box').appendChild(welcomeMessage);
         saveChatHistory();
+    }
+    
+    // Set up logout button event
+    if (document.getElementById('logout')) {
+        document.getElementById('logout').addEventListener('click', logout);
     }
     
     // Then, load QA pairs 
